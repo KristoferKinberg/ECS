@@ -1,16 +1,16 @@
-interface Component {
+export interface Component {
   type: string;
   eq: () => boolean;
 }
 
-interface System {
+export interface System {
   id: string;
   onAdd: (component: Component) => void;
   onUpdate: (newComponent: Component, oldComponent: Component) => void;
   onRemove: (newComponent: Component, oldComponent: Component) => void;
 }
 
-interface Entity {
+export interface Entity {
   id: string;
   components: Component[];
   getComponent: <ComponentType>(componentType: string) => ComponentType;
@@ -19,15 +19,15 @@ interface Entity {
   removeComponent: (componentType: string) => void;
 }
 
-interface IEntityManager {
-  entities: Entity[];
+export interface IEntityManager {
+  entities: { [key: string]: Entity };
   getEntities: () => Entity[];
   getEntity: (entityId: string) => Entity;
   getEntitiesWithComponent: (componentId: string) => Entity[];
   createEntity: () => Entity;
 }
 
-interface SystemManager {
+export interface SystemManager {
   systems: System[];
   getSystems: () => System[];
   enableSystem: (systemKey: string) => void;
