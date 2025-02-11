@@ -34,7 +34,7 @@ export default class Entity implements IEntity {
   }
 
   public removeComponent(componentId: number) {
-    this.components = this.components.filter(component => component.typeId === componentId)
+    this.components = this.components.filter(component => component.typeId !== componentId)
   }
 
   public dispose() {
