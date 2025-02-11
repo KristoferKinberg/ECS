@@ -1,16 +1,29 @@
-import {IEntity, IEntityId, IEntityManager, IEntityObject} from "./Types";
+import {IEntityId, IEntityManager, IEntityObject} from "./Types";
+import Entity from "./Entity";
 
-
-class EntityManager implements IEntityManager {
+export class EntityManager implements IEntityManager {
   entities: IEntityObject = {};
+  protected nextEntityId = 0;
 
   constructor() {}
 
-  getEntities = () => Object.values(this.entities);
+  getEntities = () =>
+    Object.values(this.entities);
 
-  getEntity = (entityId: IEntityId) => this.entities[entityId];
+  getEntity = (entityId: IEntityId) =>
+    this.entities[entityId] || null;
 
-  getEntitiesWithComponent: (componentId: string) => ;
+  getEntitiesWithComponent = (componentId: number) =>
+    this.getEntities().filter(entity => entity.hasComponent(componentId));
 
-  createEntity: () => ;
+  createEntity = () => {
+    const newEntity = new Entity(this.nextEntityId);
+    this.entities = {
+      ...this.entities,
+      [this.nextEntityId]: newEntity,
+    };
+
+    this.nextEntityId++;
+    return newEntity;
+  };
 }

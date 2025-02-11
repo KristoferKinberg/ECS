@@ -1,17 +1,5 @@
 import Entity from "../Entity";
-import {Component} from "../Types";
-
-class DummyComponent implements Component {
-  typeId: number = 0;
-
-  eq= () => true;
-}
-
-class DummyComponent2 implements Component {
-  typeId: number = 1;
-
-  eq= () => true;
-}
+import {DummyComponent, DummyComponent2} from "./dummyComponents";
 
 test("Expect entity to be instance of entity", () => {
   const entity = new Entity(0);
@@ -28,14 +16,13 @@ test("Expect entity to have 0 components", () => {
   expect(entity.components.length).toBe(0);
 });
 
-test("Expect entity to have a component", () => {
+test("Expect entity to have one component", () => {
   const entity = new Entity(1);
   const dummyComponent = new DummyComponent();
   entity.addComponent<DummyComponent>(dummyComponent);
 
   expect(entity.components.length).toBe(1);
 });
-
 
 test("Expect entity to have two components", () => {
   const entity = new Entity(1);
@@ -45,6 +32,25 @@ test("Expect entity to have two components", () => {
   entity.addComponent<DummyComponent2>(dummyComponent2);
 
   expect(entity.components.length).toBe(2);
+});
+
+test("Expect entity to have dummyComponent", () => {
+  const entity = new Entity(1);
+  const dummyComponent = new DummyComponent();
+  const dummyComponent2 = new DummyComponent2();
+  entity.addComponent<DummyComponent>(dummyComponent);
+  entity.addComponent<DummyComponent2>(dummyComponent2);
+
+  expect(entity.hasComponent(0)).toBeTruthy();
+});
+
+test("Expect entity to not have dummyComponent2", () => {
+  const entity = new Entity(1);
+  const dummyComponent = new DummyComponent();
+  const dummyComponent2 = new DummyComponent2();
+  entity.addComponent<DummyComponent>(dummyComponent);
+
+  expect(entity.hasComponent(1)).toBeFalsy();
 });
 
 test("Expect entitys component to be instance of dummyComponent", () => {

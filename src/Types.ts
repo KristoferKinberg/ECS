@@ -26,8 +26,8 @@ export type IEntityId = IEntity["id"];
 export interface IEntityManager {
   entities: IEntityObject;
   getEntities: () => IEntity[];
-  getEntity: (entityId: string) => IEntity;
-  getEntitiesWithComponent: (componentId: string) => IEntity[];
+  getEntity: (entityId: number) => IEntity | null;
+  getEntitiesWithComponent: (componentId: number) => IEntity[];
   createEntity: () => IEntity;
 }
 
