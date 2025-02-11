@@ -1,5 +1,5 @@
 export interface Component {
-  type: string;
+  typeId: number;
   eq: () => boolean;
 }
 
@@ -10,21 +10,29 @@ export interface System {
   onRemove: (newComponent: Component, oldComponent: Component) => void;
 }
 
-export interface Entity {
-  id: string;
+export interface IEntity {
+  id: number;
+  isDisposed: boolean;
   components: Component[];
-  getComponent: <ComponentType>(componentType: string) => ComponentType;
-  hasComponent: (componentType: string) => boolean;
-  addComponent: <Component>(component: Component) => Component;
-  removeComponent: (componentType: string) => void;
+  getComponent:<T extends Component>(componentId: IEntityId) => T | null;
+  hasComponent: (componentType: number) => boolean;
+  addComponent: <C extends Component>(component: Component) => Component[];
+  removeComponent: (componentType: number) => void;
+  dispose: () => void;
 }
 
+export type IEntityId = IEntity["id"];
+
 export interface IEntityManager {
-  entities: { [key: string]: Entity };
-  getEntities: () => Entity[];
-  getEntity: (entityId: string) => Entity;
-  getEntitiesWithComponent: (componentId: string) => Entity[];
-  createEntity: () => Entity;
+  entities: IEntityObject;
+  getEntities: () => IEntity[];
+  getEntity: (entityId: string) => IEntity;
+  getEntitiesWithComponent: (componentId: string) => IEntity[];
+  createEntity: () => IEntity;
+}
+
+export interface IEntityObject {
+  [key: IEntityId]: IEntity;
 }
 
 export interface SystemManager {
