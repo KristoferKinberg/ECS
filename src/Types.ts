@@ -1,22 +1,37 @@
-export interface Component {
+export interface IComponent {
   typeId: number;
   eq: () => boolean;
 }
 
-export interface System {
+export type IComponentId = IComponent["typeId"];
+
+export interface ISystemManager {
+  systemSubsList: ISystemSubList;
+  registerSystem: (system: ISystem, componentId: IComponentId) => void;
+  handleAddedComponent: (entity: IEntity, component: IComponent) => void;
+  onAddComponent: (entity: IEntity, newComponent: IComponent) => void;
+  onUpdateComponent: (entity: IEntity, oldComponent: IComponent, newComponent: IComponent) => void;
+  onRemoveComponent: (entity: IEntity, oldComponent: IComponent) => void;
+}
+
+export interface ISystemSubList {
+  [key: IComponentId]: ISystem[];
+}
+
+export interface ISystem {
   id: string;
-  onAdd: (component: Component) => void;
-  onUpdate: (newComponent: Component, oldComponent: Component) => void;
-  onRemove: (newComponent: Component, oldComponent: Component) => void;
+  onAdd: (entity: IEntity, component: IComponent) => void;
+  onUpdate: (entity: IEntity, newComponent: IComponent, oldComponent: IComponent) => void;
+  onRemove: (entity: IEntity, oldComponent: IComponent) => void;
 }
 
 export interface IEntity {
   id: number;
   isDisposed: boolean;
-  components: Component[];
-  getComponent:<T extends Component>(componentId: IEntityId) => T | null;
+  components: IComponent[];
+  getComponent:<T extends IComponent>(componentId: IEntityId) => T | null;
   hasComponent: (componentType: number) => boolean;
-  addComponent: <C extends Component>(component: Component) => Component[];
+  addComponent: <C extends IComponent>(component: IComponent) => IComponent[];
   removeComponent: (componentType: number) => void;
   dispose: () => void;
 }
@@ -36,13 +51,16 @@ export interface IEntityObject {
 }
 
 export interface SystemManager {
-  systems: System[];
-  getSystems: () => System[];
+  systems: ISystem[];
+  getSystems: () => ISystem[];
   enableSystem: (systemKey: string) => void;
   disableSystem: (systemKey: string) => void;
   enableSystems: (systemsKeys: string[]) => void;
   disableSystems: (systemsKeys: string[]) => void;
-  registerSystem: (system: System) => void;
+  registerSystem: (system: ISystem) => void;
 }
 
-// const EntityManager = (): EntityManager => {};
+export interface IECS {
+  entityManager: IEntityManager;
+  systemManager: ISystemManager;
+}

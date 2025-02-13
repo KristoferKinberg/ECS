@@ -1,14 +1,17 @@
-import {IEntityId, IEntityManager, IEntityObject} from "./Types";
+import {IEntityId, IEntityManager, IEntityObject, ISystemManager} from "./Types";
 import Entity from "./Entity";
 
 export class EntityManager implements IEntityManager {
   entities: IEntityObject = {};
   protected nextEntityId = 0;
+  protected systemManager: ISystemManager;
 
-  constructor() {}
+  constructor(systemManager: ISystemManager) {
+    this.systemManager = systemManager;
+  }
 
   getEntities = () =>
-    Object.values(this.entities);
+    Object.values(this.entities).filter(entity => !entity.isDisposed);
 
   getEntity = (entityId: IEntityId) =>
     this.entities[entityId] || null;
@@ -17,7 +20,7 @@ export class EntityManager implements IEntityManager {
     this.getEntities().filter(entity => entity.hasComponent(componentId));
 
   createEntity = () => {
-    const newEntity = new Entity(this.nextEntityId);
+    const newEntity = new Entity(this.nextEntityId, this.systemManager);
     this.entities = {
       ...this.entities,
       [this.nextEntityId]: newEntity,
