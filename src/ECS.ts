@@ -2,7 +2,7 @@ import {IComponent, IECS, IEntity, IEntityManager, ISystemManager} from "./Types
 import {EntityManager} from "./EntityManager";
 import SystemManager from "./SystemManager";
 
-export default class ECS implements IECS {
+export class ECS implements IECS {
   readonly entityManager: IEntityManager;
   readonly systemManager: ISystemManager;
 
@@ -11,7 +11,13 @@ export default class ECS implements IECS {
     this.entityManager = new EntityManager(this);
   }
 
-  onComponentAdded = (entity: IEntity, component: IComponent) => {
+  onComponentAdded = (entity: IEntity, component: IComponent) => {};
 
-  };
-};
+  get SystemManager() {
+    return this.systemManager;
+  }
+
+  get EntityManager() {
+    return this.entityManager;
+  }
+}

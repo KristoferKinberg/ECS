@@ -1,34 +1,45 @@
-import {IComponent, IComponentId, IEntity, ISystem, ISystemManager, ISystemSubList} from "./Types";
+import {IComponent, IECS, ISystemManager, ISystemSubList} from "./Types";
+import System from "./System";
+import Entity from "./Entity";
 
 export default class SystemManager implements ISystemManager {
   systemSubsList: ISystemSubList = {};
 
-  registerSystem = (system: ISystem, componentId: IComponentId) => {
+  constructor(readonly ECS: IECS) {}
+
+  public registerSystem = (system: System) => {
+    const newList = this.systemSubsList[system.componentType] || []
+
     this.systemSubsList = {
-      [componentId]: [
-        ...this.systemSubsList[componentId],
+      ...this.systemSubsList,
+      [system.componentType]: [
+        ...newList,
         system,
       ]
     }
   }
 
-  handleAddedComponent = (entity: IEntity, component: IComponent) => {
-    entity.hasComponent(component.typeId)
-      ? this.onUpdateComponent(entity, component)
-      : this.onAddComponent(entity, component);
+  public registerSystems = (systems: System[]) => {
+    systems.forEach((system) => this.registerSystem(system));
   }
 
-  onAddComponent = (entity: IEntity, component: IComponent) =>
-    this.systemSubsList[component.typeId].forEach(system => system.onAdd(entity, component));
+  get Systems() {
+    return Object.values(this.systemSubsList).flatMap(s => s);
+  }
 
-  onUpdateComponent = <T extends IComponent>(entity: IEntity, component: IComponent) => {
+  onAddComponent = (entity: Entity, component: IComponent) =>
+  {
+    this.systemSubsList[`${component.typeId}`]?.forEach(system => system.onAdd(entity, component));
+  }
+
+  onUpdateComponent = <T extends IComponent>(entity: Entity, component: IComponent) => {
     const oldComponent = entity.getComponent<T>(component.typeId);
     if (!oldComponent) throw new Error(ERRORS.COMPONENT_DOESNT_EXIST);
 
-    this.systemSubsList[component.typeId].forEach(system => system.onUpdate(entity, oldComponent, component));
+    this.systemSubsList[component.typeId]?.forEach(system => system.onUpdate(entity, oldComponent, component));
   }
 
-  onRemoveComponent = (entity: IEntity, oldComponent: IComponent) => {
+  onRemoveComponent = (entity: Entity, oldComponent: IComponent) => {
     this.systemSubsList[oldComponent.typeId].forEach(system => system.onRemove(entity, oldComponent));
   }
 }

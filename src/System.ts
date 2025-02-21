@@ -1,15 +1,14 @@
-import {IComponent, ISystem} from "./Types";
+import {IComponent, IEntity, ISystem} from "./Types";
+import Entity from "./Entity";
 
 export default class System implements ISystem {
-  id: string = "";
+  id: string = "System";
 
-  constructor(componentType: IComponent["typeId"]) {
+  constructor(public readonly componentType: IComponent["typeId"]) {}
 
-  }
+  onAdd = (entity: Entity, component: IComponent) => {};
 
-  onAdd = (component: IComponent) => {};
+  onUpdate = (entity: Entity, oldComponent: IComponent, newComponent: IComponent) => {};
 
-  onUpdate = (newComponent: IComponent, oldComponent: IComponent) => {};
-
-  onRemove = (oldComponent: IComponent) => {};
+  onRemove = (entity: Entity, oldComponent: IComponent) => {};
 }

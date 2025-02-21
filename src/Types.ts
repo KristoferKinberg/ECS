@@ -1,3 +1,6 @@
+import System from "./System";
+import Entity from "./Entity";
+
 export interface IComponent {
   typeId: number;
   eq: () => boolean;
@@ -7,11 +10,11 @@ export type IComponentId = IComponent["typeId"];
 
 export interface ISystemManager {
   systemSubsList: ISystemSubList;
-  registerSystem: (system: ISystem, componentId: IComponentId) => void;
-  handleAddedComponent: (entity: IEntity, component: IComponent) => void;
-  onAddComponent: (entity: IEntity, newComponent: IComponent) => void;
-  onUpdateComponent: (entity: IEntity, oldComponent: IComponent, newComponent: IComponent) => void;
-  onRemoveComponent: (entity: IEntity, oldComponent: IComponent) => void;
+  registerSystem: (system: System) => void;
+  registerSystems: (systems: System[]) => void;
+  onAddComponent: (entity: Entity, newComponent: IComponent) => void;
+  onUpdateComponent: (entity: Entity, oldComponent: IComponent, newComponent: IComponent) => void;
+  onRemoveComponent: (entity: Entity, oldComponent: IComponent) => void;
 }
 
 export interface ISystemSubList {
@@ -20,9 +23,9 @@ export interface ISystemSubList {
 
 export interface ISystem {
   id: string;
-  onAdd: (entity: IEntity, component: IComponent) => void;
-  onUpdate: (entity: IEntity, newComponent: IComponent, oldComponent: IComponent) => void;
-  onRemove: (entity: IEntity, oldComponent: IComponent) => void;
+  onAdd: (entity: Entity, component: IComponent) => void;
+  onUpdate: (entity: Entity, newComponent: IComponent, oldComponent: IComponent) => void;
+  onRemove: (entity: Entity, oldComponent: IComponent) => void;
 }
 
 export interface IEntity {
@@ -46,9 +49,7 @@ export interface IEntityManager {
   createEntity: () => IEntity;
 }
 
-export interface IEntityObject {
-  [key: IEntityId]: IEntity;
-}
+export type IEntityObject = Record<IEntityId, IEntity>;
 
 export interface SystemManager {
   systems: ISystem[];

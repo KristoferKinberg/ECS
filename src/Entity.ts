@@ -1,19 +1,22 @@
-import {IComponent, IEntity, ISystemManager} from "./Types";
+import {IComponent, IECS, IEntity, ISystemManager} from "./Types";
 
 export default class Entity implements IEntity {
   public components: IComponent[] = [];
   public isDisposed: boolean = false;
   public id: number;
 
-  private systemManager: ISystemManager;
-
-  constructor(id: number, systemManager: ISystemManager) {
+  constructor(id: number, protected readonly ECS: IECS) {
     this.id = id;
-    this.systemManager = systemManager;
   };
 
   public get Id() {
     return this.id;
+  }
+
+  protected handleAddedComponent = (newComponent: IComponent, existingComponent: IComponent | null) => {
+    return existingComponent
+      ? this.ECS.systemManager.onUpdateComponent(this, existingComponent, newComponent)
+      : this.ECS.systemManager.onAddComponent(this, newComponent);
   }
 
   public hasComponent(componentId: number) {
@@ -27,13 +30,14 @@ export default class Entity implements IEntity {
 
   public addComponent<T extends IComponent>(component: T): IComponent[] {
     if (this.isDisposed) throw new Error(ERRORS.ENTITY_IS_DISPOSED);
+    const existingComponent = this.getComponent(component.typeId) || null;
 
     this.components = [
-      ...this.components,
+      ...this.components.filter(c => c.typeId !== component?.typeId),
       component
     ];
 
-    this.systemManager.handleAddedComponent(this, component);
+    this.handleAddedComponent(component, existingComponent);
     return this.components;
   }
 
@@ -42,7 +46,7 @@ export default class Entity implements IEntity {
     if (!component) return;
 
     this.components = this.components.filter(component => component.typeId !== componentId);
-    this.systemManager.onRemoveComponent(this, component)
+    this.ECS.systemManager.onRemoveComponent(this, component)
   }
 
   public dispose() {
